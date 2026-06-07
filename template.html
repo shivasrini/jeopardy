@@ -336,7 +336,7 @@
 <!-- ═══ GAME BOARD ═══ -->
 <div id="game-screen">
   <div class="game-header">
-    <div class="game-title-small">🎬 Jeopardy!</div>
+    <div class="game-title-small" id="game-title-small">🎬 Jeopardy!</div>
     <div class="round-badge" id="round-badge">Round 1</div>
   </div>
   <div class="scoreboard" id="scoreboard"></div>
@@ -413,8 +413,18 @@
 // ═══════════════════════════════════════════════════════════
 //  DATA — injected by build.py
 // ═══════════════════════════════════════════════════════════
+// Fallback for GAME_CONFIG only — used if this file is opened without
+// running build.py. (QUESTION_BANK/FINAL_QUESTION still require a real
+// build; opening the raw template will fail once you click Start Game.)
+const GAME_CONFIG_FALLBACK = {
+  title: 'JEOPARDY!',
+  subtitle: 'Run build.py to load a pack',
+  taglines: ['Nice one!', 'Quiz champion!', 'Crushing it!', 'Sharp as ever!']
+};
+// {{GAME_CONFIG}}
 // {{QUESTION_BANK}}
 // {{FINAL_QUESTION}}
+const ACTIVE_CONFIG = (typeof GAME_CONFIG !== 'undefined') ? GAME_CONFIG : GAME_CONFIG_FALLBACK;
 
 // ═══════════════════════════════════════════════════════════
 //  CONSTANTS
@@ -445,10 +455,11 @@ let state = {
 //  SETUP
 // ═══════════════════════════════════════════════════════════
 function init() {
-  // Set subtitle from Final Question category if available
-  if (typeof FINAL_QUESTION !== 'undefined' && FINAL_QUESTION.subtitle) {
-    document.getElementById('game-logo-subtitle').textContent = FINAL_QUESTION.subtitle;
-  }
+  const brandedTitle = `🎬 ${ACTIVE_CONFIG.title}`;
+  document.title = brandedTitle;
+  document.getElementById('game-logo-title').textContent    = ACTIVE_CONFIG.title;
+  document.getElementById('game-logo-subtitle').textContent = ACTIVE_CONFIG.subtitle;
+  document.getElementById('game-title-small').textContent   = brandedTitle;
   setPlayerCount(4);
 }
 
@@ -804,12 +815,7 @@ function showWinner() {
 }
 
 function pickTagline() {
-  const lines = [
-    "A true connoisseur!", "Thalaivar would be proud!",
-    "The real Box Office champion!", "Ilaiyaraaja is playing in the background for you!",
-    "Baasha of the trivia table!", "Vera level! Vera level!",
-    "Mind it — this player is unstoppable!", "Superstar material right there!"
-  ];
+  const lines = ACTIVE_CONFIG.taglines;
   return lines[Math.floor(Math.random() * lines.length)];
 }
 
