@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Built: 2026-04-16 20:05 | 12 categories -->
+<!-- Built: 2026-06-07 08:15 | pack: tamil_cinema | 12 categories -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -336,7 +336,7 @@
 <!-- ═══ GAME BOARD ═══ -->
 <div id="game-screen">
   <div class="game-header">
-    <div class="game-title-small">🎬 Jeopardy!</div>
+    <div class="game-title-small" id="game-title-small">🎬 Jeopardy!</div>
     <div class="round-badge" id="round-badge">Round 1</div>
   </div>
   <div class="scoreboard" id="scoreboard"></div>
@@ -413,6 +413,27 @@
 // ═══════════════════════════════════════════════════════════
 //  DATA — injected by build.py
 // ═══════════════════════════════════════════════════════════
+// Fallback used only if this file is opened without running build.py
+// (GAME_CONFIG/QUESTION_BANK/FINAL_QUESTION won't exist as raw consts).
+const GAME_CONFIG_FALLBACK = {
+  title: 'JEOPARDY!',
+  subtitle: 'Run build.py to load a pack',
+  taglines: ['Nice one!', 'Quiz champion!', 'Crushing it!', 'Sharp as ever!']
+};
+const GAME_CONFIG = {
+  "title": "JEOPARDY!",
+  "subtitle": "Kollywood Edition",
+  "taglines": [
+    "A true connoisseur!",
+    "Thalaivar would be proud!",
+    "The real Box Office champion!",
+    "Ilaiyaraaja is playing in the background for you!",
+    "Baasha of the trivia table!",
+    "Vera level! Vera level!",
+    "Mind it — this player is unstoppable!",
+    "Superstar material right there!"
+  ]
+};
 const QUESTION_BANK = [
   {
     "id": "superstar_swag",
@@ -788,6 +809,7 @@ const QUESTION_BANK = [
   }
 ];
 const FINAL_QUESTION = {"category": "The Grand Stage", "q": "This 1987 Mani Ratnam Tamil film, starring Kamal Haasan as a Mumbai don who rises from poverty, was inspired by 'The Godfather'. It made TIME Magazine's All-Time 100 Best Films list and is widely considered one of the greatest Indian films ever made. Name the film.", "a": "Nayakan"};
+const ACTIVE_CONFIG = (typeof GAME_CONFIG !== 'undefined') ? GAME_CONFIG : GAME_CONFIG_FALLBACK;
 
 // ═══════════════════════════════════════════════════════════
 //  CONSTANTS
@@ -818,10 +840,11 @@ let state = {
 //  SETUP
 // ═══════════════════════════════════════════════════════════
 function init() {
-  // Set subtitle from Final Question category if available
-  if (typeof FINAL_QUESTION !== 'undefined' && FINAL_QUESTION.subtitle) {
-    document.getElementById('game-logo-subtitle').textContent = FINAL_QUESTION.subtitle;
-  }
+  const brandedTitle = `🎬 ${ACTIVE_CONFIG.title}`;
+  document.title = brandedTitle;
+  document.getElementById('game-logo-title').textContent    = ACTIVE_CONFIG.title;
+  document.getElementById('game-logo-subtitle').textContent = ACTIVE_CONFIG.subtitle;
+  document.getElementById('game-title-small').textContent   = brandedTitle;
   setPlayerCount(4);
 }
 
@@ -1177,12 +1200,7 @@ function showWinner() {
 }
 
 function pickTagline() {
-  const lines = [
-    "A true connoisseur!", "Thalaivar would be proud!",
-    "The real Box Office champion!", "Ilaiyaraaja is playing in the background for you!",
-    "Baasha of the trivia table!", "Vera level! Vera level!",
-    "Mind it — this player is unstoppable!", "Superstar material right there!"
-  ];
+  const lines = ACTIVE_CONFIG.taglines;
   return lines[Math.floor(Math.random() * lines.length)];
 }
 

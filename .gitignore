@@ -1,0 +1,15 @@
+# Packs you want to keep local-only but still build via the default
+# ./packs directory (no --packs-dir needed): name the folder with a
+# .local suffix, e.g. packs/family_roast.local/ — git will never track it.
+packs/*.local/
+
+# Built games are content-bearing (they inline the full question bank
+# as plain JS). A .local pack's build output must stay untracked too,
+# or its "private" content leaks straight into git via the HTML.
+# Output filenames are <pack_name>_jeopardy_game.html, so this matches
+# anything built from a *.local pack:
+output/*.local_jeopardy_game.html
+
+# Uncomment if you want NO build artifacts committed at all (e.g. you
+# build on demand and don't need the HTML checked into the repo):
+# output/
