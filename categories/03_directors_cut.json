@@ -1,0 +1,11 @@
+{
+  "id": "directors_cut",
+  "name": "🎬 Director's Cut",
+  "questions": [
+    {"value": 200,  "q": "Who directed the critically acclaimed 1992 Tamil film 'Roja'?", "a": "Mani Ratnam"},
+    {"value": 400,  "q": "Vetrimaaran directed this 2011 National Award-winning film starring Dhanush as a cockfighter.", "a": "Aadukalam"},
+    {"value": 600,  "q": "Shankar's 1993 debut film about a Robin Hood-style thief that launched his 'mass entertainer' style.", "a": "Gentleman"},
+    {"value": 800,  "q": "This director's 2019 debut 'Kaithi' kickstarted the Lokesh Cinematic Universe (LCU).", "a": "Lokesh Kanagaraj"},
+    {"value": 1000, "q": "Veteran director J. Mahendran made these two back-to-back cult classics: 'Mullum Malarum' (1978) and _____ (1980).", "a": "Nizhalgal"}
+  ]
+}

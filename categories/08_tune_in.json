@@ -1,0 +1,11 @@
+{
+  "id": "tune_in",
+  "name": "🎶 Tune In",
+  "questions": [
+    {"value": 200,  "q": "AR Rahman's very first composed song for Tamil cinema was 'Roja Jaaneman' — what is its original Tamil name from the film Roja?", "a": "Chinna Chinna Aasai"},
+    {"value": 400,  "q": "This 2012 film marked composer Anirudh Ravichander's debut, featuring the hit song 'Kannazhaga' and starring Dhanush.", "a": "3 (Moonu)"},
+    {"value": 600,  "q": "Ilaiyaraaja's hauntingly beautiful score for this 1986 Mani Ratnam film about forbidden love is considered a masterpiece.", "a": "Mouna Raagam"},
+    {"value": 800,  "q": "The viral pan-India chartbuster 'Urvasi Urvasi' featuring Prabhu Deva's iconic dance moves was from this 1994 Shankar film.", "a": "Kadhalan"},
+    {"value": 1000, "q": "AR Rahman's 1997 non-film patriotic album with the title track that became an anthem of Indian pride.", "a": "Vande Mataram"}
+  ]
+}

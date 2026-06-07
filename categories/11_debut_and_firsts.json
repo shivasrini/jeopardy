@@ -1,0 +1,11 @@
+{
+  "id": "debut_and_firsts",
+  "name": "🎥 Debut & Firsts",
+  "questions": [
+    {"value": 200,  "q": "Vijay Sethupathi made his lead breakthrough in this 2012 critically acclaimed horror-thriller directed by Kiruthiga Udhayanidhi.", "a": "Pizza"},
+    {"value": 400,  "q": "AR Rahman's debut Hindi film score was for this 1995 Ram Gopal Varma film starring Urmila Matondkar.", "a": "Rangeela"},
+    {"value": 600,  "q": "Madhavan and Shalini starred in this 2000 Mani Ratnam film about a love affair between strangers on a train.", "a": "Alaipayuthey"},
+    {"value": 800,  "q": "Dhanush made his acting debut in 2002 in a film his own father directed. Name that debut film.", "a": "Thulluvadho Ilamai"},
+    {"value": 1000, "q": "Tamil cinema's first Cinemascope film, released in 1955, starred Gemini Ganesan and was directed by B.S. Ranga. Name it.", "a": "Alibabavum 40 Thirudargalum"}
+  ]
+}

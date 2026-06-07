@@ -1,0 +1,11 @@
+{
+  "id": "box_office_baasha",
+  "name": "🏆 Box Office Baasha",
+  "questions": [
+    {"value": 200,  "q": "In the 1995 Rajinikanth blockbuster 'Baasha', what is the auto-driver's real gangster identity?", "a": "Baasha (Manickam)"},
+    {"value": 400,  "q": "Rajinikanth's 2010 sci-fi film 'Enthiran' was among the first Tamil films to cross this major box office milestone.", "a": "₹200 crore worldwide"},
+    {"value": 600,  "q": "Dhanush starred in the 2019 Vetrimaaran film 'Asuran' which was based on this Tamil novel by Poomani.", "a": "Vekkai"},
+    {"value": 800,  "q": "'Ponniyin Selvan' (2022) was based on a classic Tamil historical novel by which beloved author?", "a": "Kalki Krishnamurthy"},
+    {"value": 1000, "q": "Rajinikanth's 1995 blockbuster 'Muthu' was released in Japan in 1998 and became a cultural phenomenon there — in which country did this make him an even bigger star?", "a": "Japan"}
+  ]
+}

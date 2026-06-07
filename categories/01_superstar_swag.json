@@ -1,0 +1,11 @@
+{
+  "id": "superstar_swag",
+  "name": "🕶️ Superstar Swag",
+  "questions": [
+    {"value": 200,  "q": "What is Rajinikanth's birth name?", "a": "Shivaji Rao Gaekwad"},
+    {"value": 400,  "q": "Rajinikanth worked in this occupation in Bangalore before becoming an actor.", "a": "Bus conductor"},
+    {"value": 600,  "q": "Rajinikanth made his Tamil debut in this 1975 K. Balachander film alongside Kamal Haasan.", "a": "Apoorva Raagangal"},
+    {"value": 800,  "q": "In which Shankar-directed 2010 blockbuster did Rajinikanth play a humanoid robot named Chitti?", "a": "Enthiran"},
+    {"value": 1000, "q": "Rajinikanth received the Dadasaheb Phalke Award — India's highest film honor — in which year?", "a": "2021"}
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "id": "new_wave_kollywood",
+  "name": "🌟 New Wave Kollywood",
+  "questions": [
+    {"value": 200,  "q": "Dhanush won the National Film Award for Best Actor for this 2011 Vetrimaaran film.", "a": "Aadukalam"},
+    {"value": 400,  "q": "What is Suriya's real name?", "a": "Saravanan Sivakumar"},
+    {"value": 600,  "q": "Nayanthara starred alongside Shah Rukh Khan in this 2023 Bollywood blockbuster as her Hindi film debut.", "a": "Jawan"},
+    {"value": 800,  "q": "Which Lokesh Kanagaraj 2022 film brought together Kamal Haasan, Vijay Sethupathi, and Fahadh Faasil?", "a": "Vikram"},
+    {"value": 1000, "q": "Dhanush appeared alongside Ryan Gosling and Chris Evans in this 2022 Netflix action film directed by the Russo Brothers.", "a": "The Gray Man"}
+  ]
+}

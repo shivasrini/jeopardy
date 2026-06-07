@@ -1,0 +1,11 @@
+{
+  "id": "dialogue_decoders",
+  "name": "💬 Dialogue Decoders",
+  "questions": [
+    {"value": 200,  "q": "'Naan oru thadavai sonna, nooru thadavai sonna mathiri!' — Which Tamil superstar is famous for this dialogue style?", "a": "Rajinikanth"},
+    {"value": 400,  "q": "The power dialogue 'En vazhi, thani vazhi' (My path is my own path) is delivered by Rajinikanth in this 1995 blockbuster.", "a": "Muthu"},
+    {"value": 600,  "q": "Kamal Haasan's iconic court scene dialogue 'Naan yaarai konnen?' is from this 1987 crime classic.", "a": "Nayakan"},
+    {"value": 800,  "q": "Vijay's 'Mersal Arasan' number from this 2017 film became a political flashpoint for its dialogue criticizing the GST.", "a": "Mersal"},
+    {"value": 1000, "q": "The comedian who made 'Mind it!' a cultural phenomenon — name him.", "a": "Vadivelu"}
+  ]
+}

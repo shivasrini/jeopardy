@@ -1,0 +1,11 @@
+{
+  "id": "kollywood_goes_global",
+  "name": "🌍 Kollywood Goes Global",
+  "questions": [
+    {"value": 200,  "q": "How many Academy Awards did AR Rahman win for 'Slumdog Millionaire' in 2009?", "a": "Two — Best Original Score and Best Original Song ('Jai Ho')"},
+    {"value": 400,  "q": "Rajinikanth's 1995 blockbuster 'Muthu' became a massive pop-culture hit when released in which Asian country?", "a": "Japan"},
+    {"value": 600,  "q": "Ilaiyaraaja performed a sold-out live concert at this iconic London music venue in 2006.", "a": "Royal Albert Hall"},
+    {"value": 800,  "q": "This 1997 Mani Ratnam Hindi film featured the globally iconic rooftop train song 'Chaiyya Chaiyya', composed by AR Rahman.", "a": "Dil Se"},
+    {"value": 1000, "q": "Mani Ratnam's 'Bombay' (1995) was banned or censored in several states. AR Rahman composed its music — what was the lead actress's name?", "a": "Manisha Koirala"}
+  ]
+}

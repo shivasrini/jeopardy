@@ -1,0 +1,11 @@
+{
+  "id": "awards_and_glory",
+  "name": "🏅 Awards & Glory",
+  "questions": [
+    {"value": 200,  "q": "Mani Ratnam's 'Roja' (1992) won the National Award for Best Direction. True or False?", "a": "True"},
+    {"value": 400,  "q": "Nayanthara is referred to as the 'Lady ___' of Tamil cinema, sharing her title with Rajinikanth.", "a": "Lady Superstar"},
+    {"value": 600,  "q": "Vetrimaaran's gritty 'Visaranai' (2015) was India's official selection for the Academy Awards in which year?", "a": "2017 (89th Academy Awards)"},
+    {"value": 800,  "q": "PS Vinothraj's minimalist debut film 'Koozhangal' (Pebbles) was India's official Oscar entry for which ceremony?", "a": "94th Academy Awards (2022)"},
+    {"value": 1000, "q": "Kamal Haasan won his first National Film Award for Best Actor for which film?", "a": "Moondram Pirai (1982, Tamil) / Swathi Muthyam (1986, Telugu) — accept either"}
+  ]
+}

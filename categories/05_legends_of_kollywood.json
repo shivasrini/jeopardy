@@ -1,0 +1,11 @@
+{
+  "id": "legends_of_kollywood",
+  "name": "👑 Legends of Kollywood",
+  "questions": [
+    {"value": 200,  "q": "What does MGR stand for? Give his full name.", "a": "Maruthur Gopalan Ramachandran"},
+    {"value": 400,  "q": "Sivaji Ganesan won Best Actor at the 1960 Afro-Asian Film Festival for this patriotic Tamil film.", "a": "Veerapandiya Kattabomman"},
+    {"value": 600,  "q": "Kamal Haasan made his acting debut as a child artist in this 1960 Tamil film.", "a": "Kalathur Kannamma"},
+    {"value": 800,  "q": "MGR served as Chief Minister of Tamil Nadu for approximately how many years?", "a": "About 10 years (1977–1987)"},
+    {"value": 1000, "q": "Tamil cinema's first talking (sound) film was released in 1931. Name it.", "a": "Kalidas (1931)"}
+  ]
+}

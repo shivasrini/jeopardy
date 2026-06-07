@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<!-- Built: 2026-04-16 20:05 | 12 categories -->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎬 Jeopardy!</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Georgia', serif;
+    background: #0a0a1a;
+    color: #fff;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── SETUP ── */
+  #setup-screen {
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    min-height: 100vh; padding: 30px;
+    background: radial-gradient(ellipse at top, #1a0a2e 0%, #0a0a1a 70%);
+  }
+  .game-logo { text-align: center; margin-bottom: 40px; }
+  .game-logo h1 {
+    font-size: 3.5rem; font-weight: bold;
+    background: linear-gradient(135deg, #ffd700, #ff8c00, #ffd700);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    letter-spacing: 2px; margin-bottom: 8px;
+  }
+  .game-logo .subtitle { font-size: 1.1rem; color: #aaa; font-style: italic; letter-spacing: 3px; }
+  .film-strip { font-size: 2rem; letter-spacing: 8px; margin: 10px 0; opacity: 0.6; }
+  .setup-card {
+    background: rgba(255,255,255,0.05); border: 1px solid rgba(255,215,0,0.3);
+    border-radius: 16px; padding: 36px 44px; width: 100%; max-width: 560px;
+    backdrop-filter: blur(10px);
+  }
+  .setup-card h2 {
+    font-size: 1.1rem; color: #ffd700; margin-bottom: 18px;
+    text-align: center; letter-spacing: 1px; text-transform: uppercase;
+  }
+  .player-count-row { display: flex; gap: 10px; justify-content: center; margin-bottom: 28px; }
+  .count-btn {
+    width: 56px; height: 56px; border-radius: 50%;
+    border: 2px solid rgba(255,215,0,0.4); background: transparent;
+    color: #ffd700; font-size: 1.4rem; font-weight: bold; cursor: pointer; transition: all 0.2s;
+  }
+  .count-btn:hover { border-color: #ffd700; background: rgba(255,215,0,0.1); }
+  .count-btn.active { background: #ffd700; color: #0a0a1a; border-color: #ffd700; }
+  .player-inputs { display: flex; flex-direction: column; gap: 12px; margin-bottom: 28px; }
+  .player-input-row { display: flex; align-items: center; gap: 12px; }
+  .player-key-badge {
+    width: 36px; height: 36px; border-radius: 8px;
+    background: rgba(255,215,0,0.15); border: 1px solid rgba(255,215,0,0.4);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.85rem; color: #ffd700; font-weight: bold; flex-shrink: 0;
+  }
+  .player-input-row input {
+    flex: 1; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,215,0,0.25);
+    border-radius: 8px; padding: 10px 14px; color: #fff; font-size: 1rem; outline: none; transition: border 0.2s;
+  }
+  .player-input-row input:focus { border-color: #ffd700; }
+  .player-input-row input::placeholder { color: #555; }
+  .start-btn {
+    width: 100%; padding: 16px;
+    background: linear-gradient(135deg, #ffd700, #ff8c00);
+    border: none; border-radius: 10px; color: #0a0a1a;
+    font-size: 1.15rem; font-weight: bold; cursor: pointer;
+    letter-spacing: 1px; text-transform: uppercase; transition: opacity 0.2s, transform 0.1s;
+  }
+  .start-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+
+  /* ── GAME ── */
+  #game-screen { display: none; flex-direction: column; min-height: 100vh; padding: 12px; background: #060612; }
+  .game-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; padding: 0 4px; }
+  .game-title-small { font-size: 1.2rem; color: #ffd700; font-weight: bold; letter-spacing: 1px; }
+  .round-badge {
+    background: rgba(255,215,0,0.15); border: 1px solid rgba(255,215,0,0.4);
+    border-radius: 20px; padding: 4px 14px; font-size: 0.8rem; color: #ffd700;
+  }
+  .scoreboard { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+  .score-card {
+    flex: 1; min-width: 100px; background: rgba(255,255,255,0.05);
+    border: 2px solid rgba(255,215,0,0.2); border-radius: 10px;
+    padding: 10px 14px; text-align: center; transition: border-color 0.3s;
+  }
+  .score-card.buzzed-in {
+    border-color: #ffd700; background: rgba(255,215,0,0.12);
+    animation: pulse-gold 0.6s ease-in-out infinite alternate;
+  }
+  @keyframes pulse-gold {
+    from { box-shadow: 0 0 8px rgba(255,215,0,0.3); }
+    to   { box-shadow: 0 0 20px rgba(255,215,0,0.7); }
+  }
+  .score-card .player-name { font-size: 0.85rem; color: #ccc; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .score-card .player-score { font-size: 1.4rem; font-weight: bold; color: #ffd700; }
+  .score-card .player-score.negative { color: #ff6b6b; }
+  .score-card .key-hint { font-size: 0.7rem; color: #666; margin-top: 2px; }
+
+  /* Board */
+  .board-container { flex: 1; overflow: auto; }
+  .board { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; width: 100%; }
+  .category-header {
+    background: linear-gradient(135deg, #1a1060, #0d0a4a);
+    border: 1px solid rgba(255,215,0,0.35); border-radius: 8px;
+    padding: 14px 6px; text-align: center; font-size: 0.75rem;
+    font-weight: bold; color: #ffd700; text-transform: uppercase;
+    letter-spacing: 0.5px; line-height: 1.3; min-height: 70px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .tile {
+    background: linear-gradient(135deg, #1a1060, #110e50);
+    border: 1px solid rgba(255,215,0,0.25); border-radius: 8px;
+    padding: 10px 6px; text-align: center; font-size: 1.3rem;
+    font-weight: bold; color: #ffd700; cursor: pointer; transition: all 0.2s;
+    min-height: 65px; display: flex; align-items: center; justify-content: center;
+    user-select: none;
+  }
+  .tile:hover:not(.answered) {
+    background: linear-gradient(135deg, #2a1a80, #1a1570);
+    border-color: #ffd700; transform: scale(1.03);
+    box-shadow: 0 0 12px rgba(255,215,0,0.3);
+  }
+  .tile.answered { background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.05); color: transparent; cursor: default; }
+
+  /* ── QUESTION OVERLAY ── */
+  #question-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.92);
+    z-index: 100; flex-direction: column; align-items: center; justify-content: center; padding: 20px;
+  }
+  .question-card {
+    background: linear-gradient(135deg, #1a1060, #0d0a4a);
+    border: 2px solid rgba(255,215,0,0.5); border-radius: 20px;
+    padding: 40px 48px; max-width: 780px; width: 100%; text-align: center;
+    box-shadow: 0 0 60px rgba(255,215,0,0.15); position: relative;
+  }
+  .q-meta { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+  .q-category { font-size: 0.85rem; color: #aaa; text-transform: uppercase; letter-spacing: 2px; }
+  .q-value { font-size: 1.6rem; font-weight: bold; color: #ffd700; }
+  .question-text { font-size: 1.55rem; line-height: 1.5; color: #fff; margin: 24px 0; min-height: 80px; }
+  .timer-bar-container { width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; margin-bottom: 24px; }
+  .timer-bar { height: 100%; border-radius: 4px; background: linear-gradient(90deg, #ffd700, #ff8c00); transition: width 1s linear, background 1s; width: 100%; }
+  .timer-bar.warning { background: linear-gradient(90deg, #ff6b6b, #ff0000); }
+  .timer-text { font-size: 1.8rem; font-weight: bold; color: #ffd700; margin-bottom: 10px; }
+  .buzzer-hint { font-size: 0.9rem; color: #888; margin-bottom: 20px; }
+  .buzzed-display {
+    display: none; background: rgba(255,215,0,0.15); border: 2px solid #ffd700;
+    border-radius: 12px; padding: 14px 28px; margin: 16px 0;
+    font-size: 1.2rem; color: #ffd700; font-weight: bold; animation: fadeIn 0.3s ease;
+  }
+  @keyframes fadeIn { from { opacity:0; transform: scale(0.9); } to { opacity:1; transform: scale(1); } }
+  .judge-buttons { display: none; gap: 16px; justify-content: center; margin-top: 12px; }
+  .btn-correct {
+    padding: 14px 36px; background: linear-gradient(135deg, #00c851, #007e33);
+    border: none; border-radius: 10px; color: #fff; font-size: 1rem; font-weight: bold; cursor: pointer; transition: opacity 0.2s;
+  }
+  .btn-wrong {
+    padding: 14px 36px; background: linear-gradient(135deg, #ff4444, #cc0000);
+    border: none; border-radius: 10px; color: #fff; font-size: 1rem; font-weight: bold; cursor: pointer; transition: opacity 0.2s;
+  }
+  .btn-correct:hover, .btn-wrong:hover { opacity: 0.85; }
+  .answer-reveal {
+    display: none; background: rgba(0,200,100,0.1); border: 1px solid rgba(0,200,100,0.4);
+    border-radius: 10px; padding: 16px 24px; margin: 16px 0; font-size: 1.1rem; color: #aaffcc;
+  }
+  .answer-reveal strong { color: #00e676; font-size: 1.2rem; }
+  .btn-continue {
+    padding: 12px 40px; background: linear-gradient(135deg, #ffd700, #ff8c00);
+    border: none; border-radius: 10px; color: #0a0a1a; font-size: 1rem; font-weight: bold;
+    cursor: pointer; display: none; margin-top: 8px;
+  }
+  .btn-skip {
+    position: absolute; top: 14px; right: 14px;
+    background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 6px; color: #666; font-size: 0.75rem; padding: 4px 10px; cursor: pointer;
+  }
+  .btn-skip:hover { color: #999; }
+  .btn-peek {
+    position: absolute; top: 14px; left: 14px;
+    background: rgba(255,215,0,0.08); border: 1px solid rgba(255,215,0,0.25);
+    border-radius: 6px; color: #888; font-size: 0.75rem; padding: 4px 10px; cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-peek:hover { color: #ffd700; border-color: rgba(255,215,0,0.6); }
+  .host-answer-box {
+    display: none; background: rgba(255,215,0,0.07);
+    border: 1px dashed rgba(255,215,0,0.35); border-radius: 8px;
+    padding: 10px 18px; margin: 8px 0; font-size: 0.88rem; color: #ffd700;
+    text-align: left;
+  }
+  .host-answer-box span { color: #fff; font-weight: bold; }
+  .final-jeopardy-trigger { margin-top: 18px; text-align: center; }
+  .trigger-final-btn {
+    padding: 12px 36px; background: linear-gradient(135deg, #9b59b6, #6c3483);
+    border: none; border-radius: 10px; color: #fff; font-size: 0.95rem; font-weight: bold;
+    cursor: pointer; transition: opacity 0.2s; letter-spacing: 1px;
+  }
+  .trigger-final-btn:hover { opacity: 0.85; }
+
+  /* ── FINAL JEOPARDY ── */
+  #final-screen {
+    display: none; position: fixed; inset: 0; background: #060612;
+    z-index: 200; flex-direction: column; align-items: center; justify-content: center; padding: 20px;
+  }
+  .final-title {
+    font-size: 2.8rem; font-weight: bold;
+    background: linear-gradient(135deg, #ffd700, #ff8c00);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    margin-bottom: 8px; text-align: center;
+  }
+  .final-subtitle { color: #888; font-size: 1rem; margin-bottom: 36px; text-align: center; letter-spacing: 2px; text-transform: uppercase; }
+  .final-card {
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,215,0,0.3);
+    border-radius: 16px; padding: 32px 40px; max-width: 700px; width: 100%;
+  }
+  .wager-inputs { display: flex; flex-direction: column; gap: 14px; }
+  .wager-row { display: flex; align-items: center; gap: 16px; }
+  .wager-name { flex: 1; font-size: 1rem; color: #ffd700; }
+  .wager-score-hint { font-size: 0.8rem; color: #666; }
+  .wager-input {
+    width: 120px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,215,0,0.25);
+    border-radius: 8px; padding: 10px 12px; color: #fff; font-size: 1rem; text-align: center; outline: none;
+  }
+  .wager-input:focus { border-color: #ffd700; }
+  .final-q-text { font-size: 1.45rem; color: #fff; text-align: center; margin: 28px 0; line-height: 1.5; min-height: 80px; }
+  .final-category-badge {
+    background: rgba(255,215,0,0.1); border: 1px solid rgba(255,215,0,0.3);
+    border-radius: 20px; padding: 6px 20px; font-size: 0.85rem; color: #ffd700;
+    text-align: center; margin-bottom: 20px; display: inline-block;
+  }
+  .final-answer-rows { display: flex; flex-direction: column; gap: 14px; }
+  .final-answer-row { display: flex; align-items: center; gap: 14px; }
+  .final-answer-row .f-name { flex: 0 0 130px; font-size: 0.9rem; color: #ffd700; }
+  .final-answer-input {
+    flex: 1; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,215,0,0.25);
+    border-radius: 8px; padding: 9px 12px; color: #fff; font-size: 0.9rem; outline: none;
+  }
+  .final-answer-input:focus { border-color: #ffd700; }
+  .f-judge-correct, .f-judge-wrong {
+    padding: 6px 18px; border: none; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: bold;
+  }
+  .f-judge-correct { background: #00c851; color: #fff; }
+  .f-judge-wrong   { background: #ff4444; color: #fff; }
+  .f-wager-display { font-size: 0.8rem; color: #888; margin-left: auto; }
+  .action-btn {
+    margin-top: 28px; padding: 14px 48px;
+    background: linear-gradient(135deg, #ffd700, #ff8c00);
+    border: none; border-radius: 10px; color: #0a0a1a; font-size: 1rem; font-weight: bold;
+    cursor: pointer; display: block; width: 100%; text-transform: uppercase; letter-spacing: 1px; transition: opacity 0.2s;
+  }
+  .action-btn:hover { opacity: 0.88; }
+
+  /* ── WINNER ── */
+  #winner-screen {
+    display: none; position: fixed; inset: 0;
+    background: radial-gradient(ellipse at center, #1a0a3e 0%, #060612 70%);
+    z-index: 300; flex-direction: column; align-items: center; justify-content: center; padding: 30px; overflow: hidden;
+  }
+  .winner-trophy { font-size: 5rem; margin-bottom: 16px; animation: bounce 1s ease infinite alternate; }
+  @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-16px); } }
+  .winner-name {
+    font-size: 2.8rem; font-weight: bold;
+    background: linear-gradient(135deg, #ffd700, #ff8c00, #ffd700);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    margin-bottom: 8px; text-align: center;
+  }
+  .winner-tagline { font-size: 1.1rem; color: #aaa; margin-bottom: 36px; text-align: center; font-style: italic; }
+  .final-leaderboard {
+    background: rgba(255,255,255,0.04); border: 1px solid rgba(255,215,0,0.3);
+    border-radius: 14px; padding: 24px 32px; width: 100%; max-width: 440px; margin-bottom: 30px;
+  }
+  .lb-row {
+    display: flex; align-items: center; padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06); gap: 14px;
+  }
+  .lb-row:last-child { border-bottom: none; }
+  .lb-rank { font-size: 1.2rem; width: 28px; }
+  .lb-name { flex: 1; font-size: 1rem; color: #ddd; }
+  .lb-score { font-size: 1.2rem; font-weight: bold; color: #ffd700; }
+  .lb-score.negative { color: #ff6b6b; }
+  .play-again-btn {
+    padding: 16px 56px; background: linear-gradient(135deg, #ffd700, #ff8c00);
+    border: none; border-radius: 12px; color: #0a0a1a; font-size: 1.1rem; font-weight: bold;
+    cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: all 0.2s; margin-bottom: 14px;
+  }
+  .play-again-btn:hover { opacity: 0.9; transform: scale(1.02); }
+  .new-game-btn {
+    background: transparent; border: 1px solid rgba(255,255,255,0.2); border-radius: 10px;
+    color: #888; padding: 10px 32px; cursor: pointer; font-size: 0.9rem; transition: all 0.2s;
+  }
+  .new-game-btn:hover { border-color: #aaa; color: #ccc; }
+
+  /* ── CONFETTI ── */
+  .confetti-piece {
+    position: fixed; width: 10px; height: 10px; border-radius: 2px;
+    animation: confettiFall linear forwards; z-index: 400; pointer-events: none;
+  }
+  @keyframes confettiFall {
+    0%   { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+  }
+  .hidden { display: none !important; }
+
+  @media (max-width: 640px) {
+    .board { grid-template-columns: repeat(3, 1fr); }
+    .question-card { padding: 24px 20px; }
+    .question-text { font-size: 1.2rem; }
+    .game-logo h1 { font-size: 2.4rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══ SETUP ═══ -->
+<div id="setup-screen">
+  <div class="game-logo">
+    <div class="film-strip">🎞 🎬 🎞</div>
+    <h1 id="game-logo-title">JEOPARDY!</h1>
+    <div class="subtitle" id="game-logo-subtitle">Family Edition</div>
+  </div>
+  <div class="setup-card">
+    <h2>How many players?</h2>
+    <div class="player-count-row">
+      <button class="count-btn" onclick="setPlayerCount(2)">2</button>
+      <button class="count-btn" onclick="setPlayerCount(3)">3</button>
+      <button class="count-btn active" onclick="setPlayerCount(4)">4</button>
+    </div>
+    <h2 style="margin-bottom:16px;">Enter player names</h2>
+    <div class="player-inputs" id="player-inputs"></div>
+    <button class="start-btn" onclick="startGame()">🎬 Start Game</button>
+  </div>
+</div>
+
+<!-- ═══ GAME BOARD ═══ -->
+<div id="game-screen">
+  <div class="game-header">
+    <div class="game-title-small">🎬 Jeopardy!</div>
+    <div class="round-badge" id="round-badge">Round 1</div>
+  </div>
+  <div class="scoreboard" id="scoreboard"></div>
+  <div class="board-container">
+    <div class="board" id="board"></div>
+  </div>
+  <div class="final-jeopardy-trigger">
+    <button class="trigger-final-btn" onclick="triggerFinalJeopardy()">⭐ Final Jeopardy</button>
+  </div>
+</div>
+
+<!-- ═══ QUESTION OVERLAY ═══ -->
+<div id="question-overlay">
+  <div class="question-card">
+    <button class="btn-peek" id="btn-peek" onclick="togglePeek()">👁 Host Answer</button>
+    <button class="btn-skip" onclick="skipQuestion()">Skip ✕</button>
+    <div class="q-meta">
+      <div class="q-category" id="q-category-label"></div>
+      <div class="q-value" id="q-value-label"></div>
+    </div>
+    <div class="timer-bar-container"><div class="timer-bar" id="timer-bar"></div></div>
+    <div class="timer-text" id="timer-text">25</div>
+    <div class="question-text" id="question-text"></div>
+    <div class="buzzer-hint" id="buzzer-hint">Press your key (1 / 2 / 3 / 4) to buzz in!</div>
+    <div class="buzzed-display" id="buzzed-display"></div>
+    <div class="judge-buttons" id="judge-buttons">
+      <button class="btn-correct" onclick="judgeAnswer(true)">✓ Correct</button>
+      <button class="btn-wrong"   onclick="judgeAnswer(false)">✗ Wrong</button>
+    </div>
+    <div class="host-answer-box" id="host-answer-box">🔒 Host only: <span id="host-answer-text"></span></div>
+    <div class="answer-reveal" id="answer-reveal"></div>
+    <button class="btn-continue" id="btn-continue" onclick="closeQuestion()">Continue →</button>
+  </div>
+</div>
+
+<!-- ═══ FINAL JEOPARDY ═══ -->
+<div id="final-screen">
+  <div class="final-title">⭐ Final Jeopardy</div>
+  <div class="final-subtitle" id="final-subtitle">The Grand Stage</div>
+
+  <div class="final-card" id="final-wager-phase">
+    <h3 style="color:#ffd700;text-align:center;margin-bottom:6px;font-size:1rem;text-transform:uppercase;letter-spacing:1px;">Place Your Wagers</h3>
+    <p style="color:#888;font-size:0.85rem;text-align:center;margin-bottom:24px;">Max wager = your current score (min $0)</p>
+    <div class="wager-inputs" id="wager-inputs"></div>
+    <button class="action-btn" onclick="revealFinalQuestion()">Reveal Question →</button>
+  </div>
+
+  <div class="final-card hidden" id="final-question-phase">
+    <div style="text-align:center;"><div class="final-category-badge" id="final-cat-badge">🏆 The Grand Stage</div></div>
+    <div class="final-q-text" id="final-q-text"></div>
+    <div class="final-answer-rows" id="final-answer-rows"></div>
+    <button class="action-btn" onclick="showFinalAnswers()">Reveal Answers →</button>
+  </div>
+
+  <div class="final-card hidden" id="final-judge-phase">
+    <h3 style="color:#ffd700;text-align:center;margin-bottom:20px;text-transform:uppercase;letter-spacing:1px;">Judge the Answers</h3>
+    <p style="color:#aaffcc;text-align:center;margin-bottom:20px;font-size:0.95rem;">Correct answer: <strong id="final-correct-answer" style="color:#00e676"></strong></p>
+    <div class="final-answer-rows" id="final-judge-rows"></div>
+    <button class="action-btn" onclick="showWinner()">Declare Winner 🏆</button>
+  </div>
+</div>
+
+<!-- ═══ WINNER ═══ -->
+<div id="winner-screen">
+  <div class="winner-trophy">🏆</div>
+  <div class="winner-name" id="winner-name"></div>
+  <div class="winner-tagline" id="winner-tagline"></div>
+  <div class="final-leaderboard" id="final-leaderboard"></div>
+  <button class="play-again-btn" onclick="playAgain()">▶ Play Again (New Categories)</button>
+  <button class="new-game-btn"   onclick="newGame()">New Game (Change Players)</button>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+//  DATA — injected by build.py
+// ═══════════════════════════════════════════════════════════
+const QUESTION_BANK = [
+  {
+    "id": "superstar_swag",
+    "name": "🕶️ Superstar Swag",
+    "questions": [
+      {
+        "value": 200,
+        "q": "What is Rajinikanth's birth name?",
+        "a": "Shivaji Rao Gaekwad"
+      },
+      {
+        "value": 400,
+        "q": "Rajinikanth worked in this occupation in Bangalore before becoming an actor.",
+        "a": "Bus conductor"
+      },
+      {
+        "value": 600,
+        "q": "Rajinikanth made his Tamil debut in this 1975 K. Balachander film alongside Kamal Haasan.",
+        "a": "Apoorva Raagangal"
+      },
+      {
+        "value": 800,
+        "q": "In which Shankar-directed 2010 blockbuster did Rajinikanth play a humanoid robot named Chitti?",
+        "a": "Enthiran"
+      },
+      {
+        "value": 1000,
+        "q": "Rajinikanth received the Dadasaheb Phalke Award — India's highest film honor — in which year?",
+        "a": "2021"
+      }
+    ]
+  },
+  {
+    "id": "maestro_vs_master",
+    "name": "🎵 Maestro vs Master",
+    "questions": [
+      {
+        "value": 200,
+        "q": "AR Rahman's debut Tamil film score, which put him on the map in 1992.",
+        "a": "Roja"
+      },
+      {
+        "value": 400,
+        "q": "Ilaiyaraaja is revered by this Tamil honorific meaning 'Music Sage'.",
+        "a": "Isaignani"
+      },
+      {
+        "value": 600,
+        "q": "AR Rahman won two Academy Awards in 2009 for this film's music and song 'Jai Ho'.",
+        "a": "Slumdog Millionaire"
+      },
+      {
+        "value": 800,
+        "q": "Ilaiyaraaja became the first Asian to record an orchestral album at Abbey Road Studios, London in 1993. Name that album.",
+        "a": "Nothing But Wind"
+      },
+      {
+        "value": 1000,
+        "q": "AR Rahman composed the iconic love anthem 'Vennilave Vennilave' for this 1997 Mani Ratnam film.",
+        "a": "Minsara Kanavu"
+      }
+    ]
+  },
+  {
+    "id": "directors_cut",
+    "name": "🎬 Director's Cut",
+    "questions": [
+      {
+        "value": 200,
+        "q": "Who directed the critically acclaimed 1992 Tamil film 'Roja'?",
+        "a": "Mani Ratnam"
+      },
+      {
+        "value": 400,
+        "q": "Vetrimaaran directed this 2011 National Award-winning film starring Dhanush as a cockfighter.",
+        "a": "Aadukalam"
+      },
+      {
+        "value": 600,
+        "q": "Shankar's 1993 debut film about a Robin Hood-style thief that launched his 'mass entertainer' style.",
+        "a": "Gentleman"
+      },
+      {
+        "value": 800,
+        "q": "This director's 2019 debut 'Kaithi' kickstarted the Lokesh Cinematic Universe (LCU).",
+        "a": "Lokesh Kanagaraj"
+      },
+      {
+        "value": 1000,
+        "q": "Veteran director J. Mahendran made these two back-to-back cult classics: 'Mullum Malarum' (1978) and _____ (1980).",
+        "a": "Nizhalgal"
+      }
+    ]
+  },
+  {
+    "id": "box_office_baasha",
+    "name": "🏆 Box Office Baasha",
+    "questions": [
+      {
+        "value": 200,
+        "q": "In the 1995 Rajinikanth blockbuster 'Baasha', what is the auto-driver's real gangster identity?",
+        "a": "Baasha (Manickam)"
+      },
+      {
+        "value": 400,
+        "q": "Rajinikanth's 2010 sci-fi film 'Enthiran' was among the first Tamil films to cross this major box office milestone.",
+        "a": "₹200 crore worldwide"
+      },
+      {
+        "value": 600,
+        "q": "Dhanush starred in the 2019 Vetrimaaran film 'Asuran' which was based on this Tamil novel by Poomani.",
+        "a": "Vekkai"
+      },
+      {
+        "value": 800,
+        "q": "'Ponniyin Selvan' (2022) was based on a classic Tamil historical novel by which beloved author?",
+        "a": "Kalki Krishnamurthy"
+      },
+      {
+        "value": 1000,
+        "q": "Rajinikanth's 1995 blockbuster 'Muthu' was released in Japan in 1998 and became a cultural phenomenon there — in which country did this make him an even bigger star?",
+        "a": "Japan"
+      }
+    ]
+  },
+  {
+    "id": "legends_of_kollywood",
+    "name": "👑 Legends of Kollywood",
+    "questions": [
+      {
+        "value": 200,
+        "q": "What does MGR stand for? Give his full name.",
+        "a": "Maruthur Gopalan Ramachandran"
+      },
+      {
+        "value": 400,
+        "q": "Sivaji Ganesan won Best Actor at the 1960 Afro-Asian Film Festival for this patriotic Tamil film.",
+        "a": "Veerapandiya Kattabomman"
+      },
+      {
+        "value": 600,
+        "q": "Kamal Haasan made his acting debut as a child artist in this 1960 Tamil film.",
+        "a": "Kalathur Kannamma"
+      },
+      {
+        "value": 800,
+        "q": "MGR served as Chief Minister of Tamil Nadu for approximately how many years?",
+        "a": "About 10 years (1977–1987)"
+      },
+      {
+        "value": 1000,
+        "q": "Tamil cinema's first talking (sound) film was released in 1931. Name it.",
+        "a": "Kalidas (1931)"
+      }
+    ]
+  },
+  {
+    "id": "new_wave_kollywood",
+    "name": "🌟 New Wave Kollywood",
+    "questions": [
+      {
+        "value": 200,
+        "q": "Dhanush won the National Film Award for Best Actor for this 2011 Vetrimaaran film.",
+        "a": "Aadukalam"
+      },
+      {
+        "value": 400,
+        "q": "What is Suriya's real name?",
+        "a": "Saravanan Sivakumar"
+      },
+      {
+        "value": 600,
+        "q": "Nayanthara starred alongside Shah Rukh Khan in this 2023 Bollywood blockbuster as her Hindi film debut.",
+        "a": "Jawan"
+      },
+      {
+        "value": 800,
+        "q": "Which Lokesh Kanagaraj 2022 film brought together Kamal Haasan, Vijay Sethupathi, and Fahadh Faasil?",
+        "a": "Vikram"
+      },
+      {
+        "value": 1000,
+        "q": "Dhanush appeared alongside Ryan Gosling and Chris Evans in this 2022 Netflix action film directed by the Russo Brothers.",
+        "a": "The Gray Man"
+      }
+    ]
+  },
+  {
+    "id": "kamal_universe",
+    "name": "🎭 Kamal Universe",
+    "questions": [
+      {
+        "value": 200,
+        "q": "In 'Dasavathaaram' (2008), Kamal Haasan played this many roles simultaneously.",
+        "a": "10 roles"
+      },
+      {
+        "value": 400,
+        "q": "Kamal Haasan's production company, which he founded in 1984, bears this name.",
+        "a": "Raaj Kamal Films International"
+      },
+      {
+        "value": 600,
+        "q": "This 1987 Mani Ratnam film starring Kamal Haasan as a Mumbai don was inspired by 'The Godfather' and made TIME Magazine's All-Time 100 Best Films list.",
+        "a": "Nayakan"
+      },
+      {
+        "value": 800,
+        "q": "Kamal Haasan played an undercover RAW agent in this 2013 spy thriller which he also partially composed music for.",
+        "a": "Vishwaroopam"
+      },
+      {
+        "value": 1000,
+        "q": "Which landmark 1975 K. Balachander film introduced both Kamal Haasan and Rajinikanth to Tamil cinema in significant roles?",
+        "a": "Apoorva Raagangal"
+      }
+    ]
+  },
+  {
+    "id": "tune_in",
+    "name": "🎶 Tune In",
+    "questions": [
+      {
+        "value": 200,
+        "q": "AR Rahman's very first composed song for Tamil cinema was 'Roja Jaaneman' — what is its original Tamil name from the film Roja?",
+        "a": "Chinna Chinna Aasai"
+      },
+      {
+        "value": 400,
+        "q": "This 2012 film marked composer Anirudh Ravichander's debut, featuring the hit song 'Kannazhaga' and starring Dhanush.",
+        "a": "3 (Moonu)"
+      },
+      {
+        "value": 600,
+        "q": "Ilaiyaraaja's hauntingly beautiful score for this 1986 Mani Ratnam film about forbidden love is considered a masterpiece.",
+        "a": "Mouna Raagam"
+      },
+      {
+        "value": 800,
+        "q": "The viral pan-India chartbuster 'Urvasi Urvasi' featuring Prabhu Deva's iconic dance moves was from this 1994 Shankar film.",
+        "a": "Kadhalan"
+      },
+      {
+        "value": 1000,
+        "q": "AR Rahman's 1997 non-film patriotic album with the title track that became an anthem of Indian pride.",
+        "a": "Vande Mataram"
+      }
+    ]
+  },
+  {
+    "id": "dialogue_decoders",
+    "name": "💬 Dialogue Decoders",
+    "questions": [
+      {
+        "value": 200,
+        "q": "'Naan oru thadavai sonna, nooru thadavai sonna mathiri!' — Which Tamil superstar is famous for this dialogue style?",
+        "a": "Rajinikanth"
+      },
+      {
+        "value": 400,
+        "q": "The power dialogue 'En vazhi, thani vazhi' (My path is my own path) is delivered by Rajinikanth in this 1995 blockbuster.",
+        "a": "Muthu"
+      },
+      {
+        "value": 600,
+        "q": "Kamal Haasan's iconic court scene dialogue 'Naan yaarai konnen?' is from this 1987 crime classic.",
+        "a": "Nayakan"
+      },
+      {
+        "value": 800,
+        "q": "Vijay's 'Mersal Arasan' number from this 2017 film became a political flashpoint for its dialogue criticizing the GST.",
+        "a": "Mersal"
+      },
+      {
+        "value": 1000,
+        "q": "The comedian who made 'Mind it!' a cultural phenomenon — name him.",
+        "a": "Vadivelu"
+      }
+    ]
+  },
+  {
+    "id": "awards_and_glory",
+    "name": "🏅 Awards & Glory",
+    "questions": [
+      {
+        "value": 200,
+        "q": "Mani Ratnam's 'Roja' (1992) won the National Award for Best Direction. True or False?",
+        "a": "True"
+      },
+      {
+        "value": 400,
+        "q": "Nayanthara is referred to as the 'Lady ___' of Tamil cinema, sharing her title with Rajinikanth.",
+        "a": "Lady Superstar"
+      },
+      {
+        "value": 600,
+        "q": "Vetrimaaran's gritty 'Visaranai' (2015) was India's official selection for the Academy Awards in which year?",
+        "a": "2017 (89th Academy Awards)"
+      },
+      {
+        "value": 800,
+        "q": "PS Vinothraj's minimalist debut film 'Koozhangal' (Pebbles) was India's official Oscar entry for which ceremony?",
+        "a": "94th Academy Awards (2022)"
+      },
+      {
+        "value": 1000,
+        "q": "Kamal Haasan won his first National Film Award for Best Actor for which film?",
+        "a": "Moondram Pirai (1982, Tamil) / Swathi Muthyam (1986, Telugu) — accept either"
+      }
+    ]
+  },
+  {
+    "id": "debut_and_firsts",
+    "name": "🎥 Debut & Firsts",
+    "questions": [
+      {
+        "value": 200,
+        "q": "Vijay Sethupathi made his lead breakthrough in this 2012 critically acclaimed horror-thriller directed by Kiruthiga Udhayanidhi.",
+        "a": "Pizza"
+      },
+      {
+        "value": 400,
+        "q": "AR Rahman's debut Hindi film score was for this 1995 Ram Gopal Varma film starring Urmila Matondkar.",
+        "a": "Rangeela"
+      },
+      {
+        "value": 600,
+        "q": "Madhavan and Shalini starred in this 2000 Mani Ratnam film about a love affair between strangers on a train.",
+        "a": "Alaipayuthey"
+      },
+      {
+        "value": 800,
+        "q": "Dhanush made his acting debut in 2002 in a film his own father directed. Name that debut film.",
+        "a": "Thulluvadho Ilamai"
+      },
+      {
+        "value": 1000,
+        "q": "Tamil cinema's first Cinemascope film, released in 1955, starred Gemini Ganesan and was directed by B.S. Ranga. Name it.",
+        "a": "Alibabavum 40 Thirudargalum"
+      }
+    ]
+  },
+  {
+    "id": "kollywood_goes_global",
+    "name": "🌍 Kollywood Goes Global",
+    "questions": [
+      {
+        "value": 200,
+        "q": "How many Academy Awards did AR Rahman win for 'Slumdog Millionaire' in 2009?",
+        "a": "Two — Best Original Score and Best Original Song ('Jai Ho')"
+      },
+      {
+        "value": 400,
+        "q": "Rajinikanth's 1995 blockbuster 'Muthu' became a massive pop-culture hit when released in which Asian country?",
+        "a": "Japan"
+      },
+      {
+        "value": 600,
+        "q": "Ilaiyaraaja performed a sold-out live concert at this iconic London music venue in 2006.",
+        "a": "Royal Albert Hall"
+      },
+      {
+        "value": 800,
+        "q": "This 1997 Mani Ratnam Hindi film featured the globally iconic rooftop train song 'Chaiyya Chaiyya', composed by AR Rahman.",
+        "a": "Dil Se"
+      },
+      {
+        "value": 1000,
+        "q": "Mani Ratnam's 'Bombay' (1995) was banned or censored in several states. AR Rahman composed its music — what was the lead actress's name?",
+        "a": "Manisha Koirala"
+      }
+    ]
+  }
+];
+const FINAL_QUESTION = {"category": "The Grand Stage", "q": "This 1987 Mani Ratnam Tamil film, starring Kamal Haasan as a Mumbai don who rises from poverty, was inspired by 'The Godfather'. It made TIME Magazine's All-Time 100 Best Films list and is widely considered one of the greatest Indian films ever made. Name the film.", "a": "Nayakan"};
+
+// ═══════════════════════════════════════════════════════════
+//  CONSTANTS
+// ═══════════════════════════════════════════════════════════
+const PLAYER_KEYS   = ['1','2','3','4'];
+const PLAYER_COLORS = ['#ffd700','#00bcd4','#ff7043','#ab47bc'];
+const TIMER_SECONDS = 25;
+
+// ═══════════════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════════════
+let state = {
+  playerCount  : 4,
+  players      : [],
+  categories   : [],
+  answered     : {},
+  currentQ     : null,
+  buzzedPlayer : null,
+  timerInterval: null,
+  timeLeft     : TIMER_SECONDS,
+  wrongBuzzers : [],
+  gameRound    : 1,
+  finalWagers  : {},
+  finalAnswers : {},
+};
+
+// ═══════════════════════════════════════════════════════════
+//  SETUP
+// ═══════════════════════════════════════════════════════════
+function init() {
+  // Set subtitle from Final Question category if available
+  if (typeof FINAL_QUESTION !== 'undefined' && FINAL_QUESTION.subtitle) {
+    document.getElementById('game-logo-subtitle').textContent = FINAL_QUESTION.subtitle;
+  }
+  setPlayerCount(4);
+}
+
+function setPlayerCount(n) {
+  state.playerCount = n;
+  document.querySelectorAll('.count-btn').forEach((btn, i) => {
+    btn.classList.toggle('active', (i + 2) === n);
+  });
+  renderPlayerInputs();
+}
+
+function renderPlayerInputs() {
+  const container = document.getElementById('player-inputs');
+  container.innerHTML = '';
+  for (let i = 0; i < state.playerCount; i++) {
+    container.innerHTML += `
+      <div class="player-input-row">
+        <div class="player-key-badge" style="color:${PLAYER_COLORS[i]};border-color:${PLAYER_COLORS[i]}40">Key ${i+1}</div>
+        <input type="text" id="player-name-${i}" placeholder="Player ${i+1} name" maxlength="20" />
+      </div>`;
+  }
+}
+
+function startGame() {
+  state.players = [];
+  for (let i = 0; i < state.playerCount; i++) {
+    const input = document.getElementById(`player-name-${i}`);
+    const name  = input?.value?.trim() || `Player ${i+1}`;
+    state.players.push({ name, score: 0, key: PLAYER_KEYS[i] });
+  }
+  state.answered  = {};
+  state.gameRound = 1;
+  selectRandomCategories();
+  showGameScreen();
+}
+
+function selectRandomCategories() {
+  const shuffled = [...QUESTION_BANK].sort(() => Math.random() - 0.5);
+  state.categories = shuffled.slice(0, Math.min(6, shuffled.length));
+}
+
+// ═══════════════════════════════════════════════════════════
+//  SCREENS
+// ═══════════════════════════════════════════════════════════
+function showGameScreen() {
+  document.getElementById('setup-screen').style.display = 'none';
+  document.getElementById('game-screen').style.display  = 'flex';
+  document.getElementById('final-screen').style.display  = 'none';
+  document.getElementById('winner-screen').style.display = 'none';
+  document.getElementById('round-badge').textContent = `Round ${state.gameRound}`;
+  renderScoreboard();
+  renderBoard();
+}
+
+function renderScoreboard() {
+  document.getElementById('scoreboard').innerHTML = state.players.map((p, i) => `
+    <div class="score-card" id="score-card-${i}">
+      <div class="player-name" style="color:${PLAYER_COLORS[i]}">${p.name}</div>
+      <div class="player-score ${p.score < 0 ? 'negative' : ''}" id="score-val-${i}">$${p.score.toLocaleString()}</div>
+      <div class="key-hint">Press ${PLAYER_KEYS[i]}</div>
+    </div>`).join('');
+}
+
+function updateScoreDisplay() {
+  state.players.forEach((p, i) => {
+    const el = document.getElementById(`score-val-${i}`);
+    if (el) {
+      el.textContent = `$${p.score.toLocaleString()}`;
+      el.className = `player-score ${p.score < 0 ? 'negative' : ''}`;
+    }
+  });
+}
+
+function renderBoard() {
+  const board  = document.getElementById('board');
+  const VALUES = [200, 400, 600, 800, 1000];
+  board.style.gridTemplateColumns = `repeat(${state.categories.length}, 1fr)`;
+  board.innerHTML = '';
+
+  state.categories.forEach(cat => {
+    board.innerHTML += `<div class="category-header">${cat.name}</div>`;
+  });
+
+  VALUES.forEach(val => {
+    state.categories.forEach(cat => {
+      // Find the question for this value (support non-standard values too)
+      const q   = cat.questions.find(q => q.value === val);
+      const key = `${cat.id}_${val}`;
+      const done = state.answered[key] || !q;
+      board.innerHTML += `
+        <div class="tile ${done ? 'answered' : ''}" onclick="${done ? '' : `openQuestion('${cat.id}',${val})`}">
+          ${done ? '' : `$${val}`}
+        </div>`;
+    });
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+//  QUESTION FLOW
+// ═══════════════════════════════════════════════════════════
+function openQuestion(catId, value) {
+  const cat = state.categories.find(c => c.id === catId);
+  const q   = cat?.questions.find(q => q.value === value);
+  if (!q) return;
+
+  state.currentQ     = { catId, value, q: q.q, a: q.a };
+  state.buzzedPlayer = null;
+  state.wrongBuzzers = [];
+  state.timeLeft     = TIMER_SECONDS;
+
+  document.getElementById('q-category-label').textContent  = cat.name;
+  document.getElementById('q-value-label').textContent     = `$${value}`;
+  document.getElementById('question-text').textContent     = q.q;
+  document.getElementById('host-answer-text').textContent  = q.a;
+  document.getElementById('host-answer-box').style.display = 'none';
+  document.getElementById('btn-peek').textContent          = '👁 Host Answer';
+  document.getElementById('buzzed-display').style.display  = 'none';
+  document.getElementById('judge-buttons').style.display   = 'none';
+  document.getElementById('answer-reveal').style.display   = 'none';
+  document.getElementById('btn-continue').style.display    = 'none';
+  document.getElementById('buzzer-hint').style.display     = 'block';
+  document.getElementById('buzzer-hint').textContent       = 'Press your key (1 / 2 / 3 / 4) to buzz in!';
+  document.getElementById('timer-bar').style.width         = '100%';
+  document.getElementById('timer-bar').className           = 'timer-bar';
+  document.getElementById('timer-text').textContent        = TIMER_SECONDS;
+  document.getElementById('question-overlay').style.display = 'flex';
+
+  startTimer();
+}
+
+function startTimer() {
+  clearInterval(state.timerInterval);
+  state.timerInterval = setInterval(() => {
+    state.timeLeft--;
+    const pct = (state.timeLeft / TIMER_SECONDS) * 100;
+    document.getElementById('timer-bar').style.width  = pct + '%';
+    document.getElementById('timer-text').textContent = state.timeLeft;
+    if (state.timeLeft <= 8) document.getElementById('timer-bar').className = 'timer-bar warning';
+    if (state.timeLeft <= 0) { clearInterval(state.timerInterval); timeUp(); }
+  }, 1000);
+}
+
+function timeUp() {
+  if (state.buzzedPlayer !== null) return;
+  document.getElementById('buzzer-hint').style.display = 'none';
+  markAnswered();
+  revealAnswer();
+}
+
+function buzzIn(playerIndex) {
+  if (!state.currentQ) return;
+  if (state.wrongBuzzers.includes(playerIndex)) return;
+  if (state.buzzedPlayer !== null) return;
+  if (document.getElementById('btn-continue').style.display !== 'none') return;
+
+  clearInterval(state.timerInterval);
+  state.buzzedPlayer = playerIndex;
+
+  const p = state.players[playerIndex];
+  const display = document.getElementById('buzzed-display');
+  display.textContent      = `🔔 ${p.name} buzzed in!`;
+  display.style.display    = 'block';
+  display.style.borderColor = PLAYER_COLORS[playerIndex];
+  display.style.color       = PLAYER_COLORS[playerIndex];
+
+  document.getElementById('buzzer-hint').style.display  = 'none';
+  document.getElementById('judge-buttons').style.display = 'flex';
+
+  document.querySelectorAll('.score-card').forEach((c, i) => {
+    c.classList.toggle('buzzed-in', i === playerIndex);
+  });
+}
+
+function judgeAnswer(correct) {
+  const playerIndex = state.buzzedPlayer;
+  const value       = state.currentQ.value;
+  document.querySelectorAll('.score-card').forEach(c => c.classList.remove('buzzed-in'));
+  document.getElementById('judge-buttons').style.display = 'none';
+
+  if (correct) {
+    state.players[playerIndex].score += value;
+    updateScoreDisplay();
+    markAnswered();
+    revealAnswer();
+  } else {
+    state.players[playerIndex].score -= value;
+    updateScoreDisplay();
+    state.wrongBuzzers.push(playerIndex);
+    state.buzzedPlayer = null;
+
+    const remaining = state.players.filter((_, i) => !state.wrongBuzzers.includes(i));
+    if (remaining.length > 0) {
+      document.getElementById('buzzed-display').style.display = 'none';
+      document.getElementById('buzzer-hint').textContent = `Others can still buzz! (${remaining.map(p => p.name).join(', ')})`;
+      document.getElementById('buzzer-hint').style.display = 'block';
+      state.timeLeft = 15;
+      document.getElementById('timer-bar').style.width  = '100%';
+      document.getElementById('timer-bar').className    = 'timer-bar';
+      document.getElementById('timer-text').textContent = 15;
+      startTimer();
+    } else {
+      markAnswered();
+      revealAnswer();
+    }
+  }
+}
+
+function markAnswered() {
+  if (state.currentQ) {
+    state.answered[`${state.currentQ.catId}_${state.currentQ.value}`] = true;
+  }
+}
+
+function revealAnswer() {
+  clearInterval(state.timerInterval);
+  if (state.currentQ) {
+    state.answered[`${state.currentQ.catId}_${state.currentQ.value}`] = true;
+  }
+  const reveal = document.getElementById('answer-reveal');
+  reveal.innerHTML = `✓ Correct answer: <strong>${state.currentQ.a}</strong>`;
+  reveal.style.display = 'block';
+  document.getElementById('buzzer-hint').style.display   = 'none';
+  document.getElementById('buzzed-display').style.display = 'none';
+  document.getElementById('judge-buttons').style.display  = 'none';
+  document.getElementById('btn-continue').style.display   = 'inline-block';
+  document.getElementById('timer-text').textContent       = '⏱';
+}
+
+function togglePeek() {
+  const box = document.getElementById('host-answer-box');
+  const btn = document.getElementById('btn-peek');
+  const visible = box.style.display === 'block';
+  box.style.display = visible ? 'none' : 'block';
+  btn.textContent   = visible ? '👁 Host Answer' : '🙈 Hide Answer';
+}
+
+function skipQuestion() {
+  clearInterval(state.timerInterval);
+  markAnswered();
+  closeQuestion();
+}
+
+function closeQuestion() {
+  document.getElementById('question-overlay').style.display = 'none';
+  state.currentQ     = null;
+  state.buzzedPlayer = null;
+  state.wrongBuzzers = [];
+  document.querySelectorAll('.score-card').forEach(c => c.classList.remove('buzzed-in'));
+  renderBoard();
+}
+
+// ═══════════════════════════════════════════════════════════
+//  FINAL JEOPARDY
+// ═══════════════════════════════════════════════════════════
+function triggerFinalJeopardy() {
+  clearInterval(state.timerInterval);
+  if (document.getElementById('question-overlay').style.display === 'flex') closeQuestion();
+
+  document.getElementById('game-screen').style.display = 'none';
+  document.getElementById('final-screen').style.display = 'flex';
+  document.getElementById('final-wager-phase').classList.remove('hidden');
+  document.getElementById('final-question-phase').classList.add('hidden');
+  document.getElementById('final-judge-phase').classList.add('hidden');
+
+  if (FINAL_QUESTION.category) {
+    document.getElementById('final-subtitle').textContent = FINAL_QUESTION.category;
+  }
+
+  document.getElementById('wager-inputs').innerHTML = state.players.map((p, i) => `
+    <div class="wager-row">
+      <div class="wager-name" style="color:${PLAYER_COLORS[i]}">${p.name}</div>
+      <div class="wager-score-hint">Score: $${p.score.toLocaleString()}</div>
+      <input type="number" class="wager-input" id="wager-${i}"
+        min="0" max="${Math.max(0, p.score)}" value="0" placeholder="$0" />
+    </div>`).join('');
+}
+
+function revealFinalQuestion() {
+  state.finalWagers = {};
+  state.players.forEach((p, i) => {
+    const raw = parseInt(document.getElementById(`wager-${i}`)?.value || 0);
+    state.finalWagers[i] = Math.min(Math.max(0, raw), Math.max(0, p.score));
+  });
+
+  document.getElementById('final-wager-phase').classList.add('hidden');
+  document.getElementById('final-question-phase').classList.remove('hidden');
+  document.getElementById('final-cat-badge').textContent = `🏆 ${FINAL_QUESTION.category || 'Final Jeopardy'}`;
+  document.getElementById('final-q-text').textContent    = FINAL_QUESTION.q;
+
+  document.getElementById('final-answer-rows').innerHTML = state.players.map((p, i) => `
+    <div class="final-answer-row">
+      <div class="f-name" style="color:${PLAYER_COLORS[i]}">${p.name}</div>
+      <input type="text" class="final-answer-input" id="final-ans-${i}" placeholder="Write your answer..." />
+      <div class="f-wager-display">Wager: $${state.finalWagers[i].toLocaleString()}</div>
+    </div>`).join('');
+}
+
+function showFinalAnswers() {
+  state.finalAnswers = {};
+  state.players.forEach((p, i) => {
+    state.finalAnswers[i] = document.getElementById(`final-ans-${i}`)?.value || '';
+  });
+
+  document.getElementById('final-question-phase').classList.add('hidden');
+  document.getElementById('final-judge-phase').classList.remove('hidden');
+  document.getElementById('final-correct-answer').textContent = FINAL_QUESTION.a;
+
+  document.getElementById('final-judge-rows').innerHTML = state.players.map((p, i) => `
+    <div class="final-answer-row" id="final-judge-row-${i}">
+      <div class="f-name" style="color:${PLAYER_COLORS[i]}">${p.name}</div>
+      <div style="flex:1;font-size:0.95rem;color:#ddd">"${state.finalAnswers[i] || '(no answer)'}"</div>
+      <div class="f-wager-display">±$${state.finalWagers[i].toLocaleString()}</div>
+      <div style="display:flex;gap:8px">
+        <button class="f-judge-correct" onclick="judgeFinal(${i},true)">✓</button>
+        <button class="f-judge-wrong"   onclick="judgeFinal(${i},false)">✗</button>
+      </div>
+    </div>`).join('');
+}
+
+function judgeFinal(playerIndex, correct) {
+  const wager = state.finalWagers[playerIndex];
+  state.players[playerIndex].score += correct ? wager : -wager;
+
+  const row  = document.getElementById(`final-judge-row-${playerIndex}`);
+  row.querySelectorAll('button').forEach(b => { b.disabled = true; b.style.opacity = '0.4'; });
+  row.style.background   = correct ? 'rgba(0,200,80,0.08)' : 'rgba(255,50,50,0.08)';
+  row.style.borderRadius = '8px';
+}
+
+// ═══════════════════════════════════════════════════════════
+//  WINNER
+// ═══════════════════════════════════════════════════════════
+function showWinner() {
+  document.getElementById('final-screen').style.display  = 'none';
+  document.getElementById('winner-screen').style.display = 'flex';
+
+  const sorted = [...state.players]
+    .map((p, i) => ({ ...p, origIndex: i }))
+    .sort((a, b) => b.score - a.score);
+
+  document.getElementById('winner-name').textContent    = `🎬 ${sorted[0].name} Wins!`;
+  document.getElementById('winner-tagline').textContent = pickTagline();
+
+  const medals = ['🥇','🥈','🥉','4️⃣'];
+  document.getElementById('final-leaderboard').innerHTML = sorted.map((p, i) => `
+    <div class="lb-row">
+      <div class="lb-rank">${medals[i]}</div>
+      <div class="lb-name" style="color:${PLAYER_COLORS[p.origIndex]}">${p.name}</div>
+      <div class="lb-score ${p.score < 0 ? 'negative' : ''}">$${p.score.toLocaleString()}</div>
+    </div>`).join('');
+
+  launchConfetti();
+}
+
+function pickTagline() {
+  const lines = [
+    "A true connoisseur!", "Thalaivar would be proud!",
+    "The real Box Office champion!", "Ilaiyaraaja is playing in the background for you!",
+    "Baasha of the trivia table!", "Vera level! Vera level!",
+    "Mind it — this player is unstoppable!", "Superstar material right there!"
+  ];
+  return lines[Math.floor(Math.random() * lines.length)];
+}
+
+function launchConfetti() {
+  const colors = ['#ffd700','#ff8c00','#00bcd4','#ab47bc','#ff7043','#00e676','#fff'];
+  for (let i = 0; i < 120; i++) {
+    setTimeout(() => {
+      const piece = document.createElement('div');
+      piece.className        = 'confetti-piece';
+      piece.style.left       = Math.random() * 100 + 'vw';
+      piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+      piece.style.width      = (6 + Math.random() * 8) + 'px';
+      piece.style.height     = (6 + Math.random() * 8) + 'px';
+      piece.style.animationDuration = (2 + Math.random() * 3) + 's';
+      piece.style.animationDelay   = Math.random() * 0.5 + 's';
+      document.body.appendChild(piece);
+      setTimeout(() => piece.remove(), 4000);
+    }, i * 30);
+  }
+}
+
+function playAgain() {
+  state.players.forEach(p => p.score = 0);
+  state.answered  = {};
+  state.gameRound++;
+  selectRandomCategories();
+  showGameScreen();
+}
+
+function newGame() {
+  document.getElementById('winner-screen').style.display = 'none';
+  document.getElementById('setup-screen').style.display  = 'flex';
+  init();
+}
+
+// ═══════════════════════════════════════════════════════════
+//  KEYBOARD BUZZER
+// ═══════════════════════════════════════════════════════════
+document.addEventListener('keydown', e => {
+  if (document.getElementById('question-overlay').style.display !== 'flex') return;
+  if (state.buzzedPlayer !== null) return;
+  if (document.getElementById('btn-continue').style.display !== 'none') return;
+  const idx = PLAYER_KEYS.indexOf(e.key);
+  if (idx !== -1 && idx < state.players.length) buzzIn(idx);
+});
+
+// ── Boot ──
+init();
+</script>
+</body>
+</html>

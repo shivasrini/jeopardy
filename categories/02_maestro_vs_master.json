@@ -1,0 +1,11 @@
+{
+  "id": "maestro_vs_master",
+  "name": "🎵 Maestro vs Master",
+  "questions": [
+    {"value": 200,  "q": "AR Rahman's debut Tamil film score, which put him on the map in 1992.", "a": "Roja"},
+    {"value": 400,  "q": "Ilaiyaraaja is revered by this Tamil honorific meaning 'Music Sage'.", "a": "Isaignani"},
+    {"value": 600,  "q": "AR Rahman won two Academy Awards in 2009 for this film's music and song 'Jai Ho'.", "a": "Slumdog Millionaire"},
+    {"value": 800,  "q": "Ilaiyaraaja became the first Asian to record an orchestral album at Abbey Road Studios, London in 1993. Name that album.", "a": "Nothing But Wind"},
+    {"value": 1000, "q": "AR Rahman composed the iconic love anthem 'Vennilave Vennilave' for this 1997 Mani Ratnam film.", "a": "Minsara Kanavu"}
+  ]
+}

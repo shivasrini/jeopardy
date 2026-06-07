@@ -1,0 +1,11 @@
+{
+  "id": "kamal_universe",
+  "name": "🎭 Kamal Universe",
+  "questions": [
+    {"value": 200,  "q": "In 'Dasavathaaram' (2008), Kamal Haasan played this many roles simultaneously.", "a": "10 roles"},
+    {"value": 400,  "q": "Kamal Haasan's production company, which he founded in 1984, bears this name.", "a": "Raaj Kamal Films International"},
+    {"value": 600,  "q": "This 1987 Mani Ratnam film starring Kamal Haasan as a Mumbai don was inspired by 'The Godfather' and made TIME Magazine's All-Time 100 Best Films list.", "a": "Nayakan"},
+    {"value": 800,  "q": "Kamal Haasan played an undercover RAW agent in this 2013 spy thriller which he also partially composed music for.", "a": "Vishwaroopam"},
+    {"value": 1000, "q": "Which landmark 1975 K. Balachander film introduced both Kamal Haasan and Rajinikanth to Tamil cinema in significant roles?", "a": "Apoorva Raagangal"}
+  ]
+}
